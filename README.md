@@ -3,8 +3,8 @@ Below is the live schedule for Applied Economic Forecasting for Spring 2026.
 
 | Lecture | Topic                                           | Remarks |
 |--------:|-------------------------------------------------|---------|
-| 1       | [Introduction to Forecasting](2.Lectures/L1/1.Intro_Time_Series.pdf)                     | HW0.1 - Tidyverse (Datacamp Assignment) <br> 🕝 $${\color{blue}\text{Due: Feb 4, 2026 (2:30 PM)}}$$       |
-|         | Introduction to R & R Markdown                  | HW0.2 - RMarkdown (Datacamp Assignment) <br> 🕝 $${\color{blue}\text{Due: Feb 4, 2026 (2:30 PM)}}$$       |
+| 1       | [Introduction to Forecasting](2.Lectures/L1/1.Intro_Time_Series.pdf)                     | HW1.1 - Tidyverse (Datacamp Assignment) <br> 🕝 $${\color{blue}\text{Due: Feb 4, 2026 (2:30 PM)}}$$       |
+|         | Introduction to R & R Markdown                  | HW1.2 - RMarkdown (Datacamp Assignment) <br> 🕝 $${\color{blue}\text{Due: Feb 4, 2026 (2:30 PM)}}$$       |
 | 2       | [Exploring & Visualizing Time Series](2.Lectures/L2/2-Visualizing-Time-Series.pdf)             |         |
 |         | **Univariate Models**                           |         |
 | 3       | Basic Forecasting Models                        |         |
