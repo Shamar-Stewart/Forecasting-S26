@@ -7,7 +7,7 @@ Below is the live schedule for Applied Economic Forecasting for Spring 2026.
 |         | Introduction to R & R Markdown                  | HW1.2 - RMarkdown (Datacamp Assignment) <br> 🕝 $${\color{blue}\text{Due: Feb 4, 2026 (2:30 PM)}}$$       |
 | 2       | [Exploring & Visualizing Time Series](2.Lectures/L2/2-Visualizing-Time-Series.pdf)             |         |
 |         | **Univariate Models**                           |         |
-| 3       | Basic Forecasting Models                        |         |
+| 3       | [Basic Forecasting Models](2.Lectures/L3/3.Evaluation_of_Basic_Forecasting_Models.pdf)                        |         |
 | 4       | Linear & Dynamic Time Series Regressions        |         |
 | 5       | Time Series Decompositions                     |         |
 |         | Exam 1 — March 6, 2026                          |         |
