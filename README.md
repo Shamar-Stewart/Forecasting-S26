@@ -5,7 +5,7 @@ Below is the live schedule for Applied Economic Forecasting for Spring 2026.
 |--------:|-------------------------------------------------|---------|
 | 1       | [Introduction to Forecasting](2.Lectures/L1/1.Intro_Time_Series.pdf)                     | HW1.1 - Tidyverse (Datacamp Assignment) <br> 🕝 $${\color{blue}\text{Due: Feb 4, 2026 (2:30 PM)}}$$       |
 |         | Introduction to R & R Markdown                  | HW1.2 - RMarkdown (Datacamp Assignment) <br> 🕝 $${\color{blue}\text{Due: Feb 4, 2026 (2:30 PM)}}$$       |
-| 2       | [Exploring & Visualizing Time Series](2.Lectures/L2/2-Visualizing-Time-Series.pdf)             |         |
+| 2       | [Exploring & Visualizing Time Series](2.Lectures/L2/2-Visualizing-Time-Series.pdf)             | [HW2 - RMD FILE](3.Homework/HW2/AAEC_4484-AAEC_STAT-5484_HW2_S26_Empty.Rmd) <br> [HW2 - PDF FILE](3.Homework/HW2/AAEC_4484-AAEC_STAT-5484_HW2_S26_Empty.pdf) <br> 🕝 $${\color{blue}\text{Due: Feb 18, 2026 (2:30 PM)}}$$       |
 |         | **Univariate Models**                           |         |
 | 3       | [Basic Forecasting Models](2.Lectures/L3/3.Evaluation_of_Basic_Forecasting_Models.pdf)                        |         |
 | 4       | Linear & Dynamic Time Series Regressions        |         |
