@@ -1,0 +1,147 @@
+---
+title: 'AAEC4484/AAEC(STAT)5484: Applied Economic Forecasting'
+author: __Your Name Here__
+date: |
+    Homework #3 - Spring `r format(Sys.Date(),"%Y")` 
+output: pdf_document
+header-includes:
+ \usepackage{float}
+geometry: margin=0.8in
+---
+
+```{r setup, include=FALSE}
+library(fpp3)
+library(quantmod); library(patchwork)
+knitr::opts_chunk$set(echo=TRUE, fig.pos='H',
+                      size="footnotesize",
+                      message=FALSE, warning=FALSE,
+                      fig.height=3,
+                      out.width="\\textwidth") 
+theme_set(theme_light()) #change if you like
+options(digits = 3)
+```
+
+
+**Instructions**: Where necessary ensure that your graphs and visuals have proper titles and axis labels. Refer to the output, whenever appropriate, when discussing the results. **Creativity (coupled with relevance) will be rewarded.**
+
+**This week, the emphasis will be on pulling real-world data and conducting a more in-depth analysis of the data. The first question examines the Producer Price Index (PPI) series, while the second will explore the Weekly supply of Motor Gasoline in the US.**
+
+# Question 1: Crude Oil Prices: West Texas Intermediate (WTI)
+
+The WTI, a light  (low density), sweet (low sulfur content) is a grade of crude oil used as one of the three global oil benchmarks-- the other two are Brent Crude and Dubai Crude.
+
+Although the Energy Information Administration (EIA) provides a wealth of data on crude oil prices, for this exercise, we will be using the `quantmod` package to import and analyze the monthly `WTI` series (Symbol: `WTISPLC`) from the Federal Reserve Bank of St. Louis (FRED).
+
+
+a. Using the `getSymbols()` function (with `auto.assign = FALSE`), import and produce an `autoplot` of our series of interest. Next, use the `fortify()` and `as_tsibble()` functions to convert the data into a `tsibble` object. **Note: This will allow us to use the time series functionalities of our `fpp3` package.**
+
+- Store the results of this step into a variable called `wti.raw` and produce an `autoplot()` of the series. Be sure to label your axes properly and add a title to your graph.
+
+
+b. From the graph above, we can see that the WTI series was flat and almost unchanged up to the early 1980s. After, the series exhibits a more volatile pattern. What was the main reason for this? 
+
+
+c. Given the peculiarities observed noted in part (b), use the `filter_index()` function to subset the data to include only observations after `January 1986`. Save this as `wti`.
+
+-  Produce an `autoplot()`, and `ACF` plot of the `wti` series. Be sure to set the maximum lags in the ACF to be at least three (3) years. Comment on your plots. In particular, do you observe any patterns in the data? Does it appear to be a white noise process?
+**Hint: `wti.raw` reports the series on the first of each month. This means that some months the series are reported after 30 days, while others are reported after 29 or even 28 or 27 days (between January and February). Your ACF might throw an error about irregular intervals. To work around this, use the `mutate()` function to create a new column called `Month` that is `yearmonth()` format of the `Index` column. Then, use the `update_tsibble()` function to declare this new column as the index of your `tsibble`. Finally, drop the original `Index` column.**
+
+**Use the `patchwork` package to combine your graphs. Also, use the `plot_annotation()` function to add a main title to your combined graph.**
+
+
+d. Compute the **logarithmic** growth rate of the `wti` series. For clarity, I am asking you to compute the first order logged difference. Be sure to multiply by 100 to get the percentage change. **It is fine to store this back in as `wti`.**
+
+
+e. Repeat the analysis and interpretation of the plots in (c) for the `growth` series. Are you convinced that this is a white noise process? Why, or why not?
+
+
+e. Suraj and Rupok are study partners. From Suraj's read of the `ACF` plot, he is concerned about the initial lags and suggest that the growth series might actually not be a white noise process. Rupok, on the other hand, is not concerned about the initial lags and argues that the growth series is a white noise process since it quickly decays. They almost got into a fight over this. Who does your Ljung-Box test support? **Remember to explicitly state the null hypothesis and the decision rule of the test before concluding. Also, remember to account for the appropriate number of lags in the test.**
+
+
+\newpage
+
+# Question 2:  US finished motor gasoline products supplied
+
+**The US Energy Information Administration (EIA) reports several data series on the gas and renewable energy sector. For this exercise, we will be using the `Natural Gas Delivered to Consumers in Virginia (Million Cubic Feet, MMcf)` series. The most updated data are available** [here](https://www.eia.gov/dnav/ng/hist/n3060va2m.htm) 
+
+**Our focus will be on estimating and evaluating competing models (albeit the most basic). At the end, you will select the "best" model for modeling the future value of monthly deliveries. This assignment should bridge the gap between the earlier modules and this current one.**
+
+**Note: Before you proceed, please install the `rio` package. Do this in your consoles and not within the `.Rmd` file.**
+
+a. Using my code below, import the data from the EIA directly into `R`. If you were to download the `.xls` file manually, you would notice that the data is in the second sheet and that the first two rows are not part of the column headings you need. We will specify this using the `sheet = 2` and `skip = 2` arguments, respectively.
+
+**Please feel free to manually download the Excel file from the EIA link above and explore this on your own.** 
+
+```{r importdata1, eval=FALSE}
+# Remove the `eval = FALSE` argument to run the code and import the data. 
+gas.raw <- rio::import("website here", sheet = xxx, skip = xxx)
+
+```
+
+
+b. Next, let us clean up the data a bit. Your tasks are as follows:
+
+- Using the `mutate()` function, declare the `Date` column as a `yearmonth()` object. It is okay to override `Date`.
+- Rename the second column to `Delivery`. 
+**Hint: Instead of typing out the full (and long) name of this column, a cool trick is to rename columns based on their column number. For example, `rename(Mcol = 3)` will rename the third column to `Mcol`.**
+- Declare the dataset as a `tsibble` object using the `as_tsibble()` function.
+- At the time of writing, the latest data was November 2025. With the next release pending, it is possible that the sheet would have been updated by the time you attempt this assignment. Use the `filter_index()` function to ensure your sample period matches mine.
+
+**Store the results of this step into `gas`.**
+
+
+c. A quick time plot of the data (**in your console**) will reveal that the observation for September 2025 is missing. We have several options to deal with this. Because the data are monthly and potentially seasonal, we will implement a **seasonal-mean imputation rule**:
+>> any missing observation will be replaced by the historical average for that calendar month over the sample period.
+
+This preserves the seasonal structure of the series.
+
+Proceed as follows:
+
+- Create a new column called `Month` that extracts the calendar month from the `Date` index.
+- Group the data by month so that observations from the same calendar month (across years) are grouped together.
+- Use the `mutate()` and `if_else()` functions to replace any missing `Delivery` value with their within-month historical average. Be sure to include `na.rm = TRUE` in the `mean()` function to exclude missing values from the calculation. 
+- `ungroup()` the data and drop the temporary `Month` column to return to the original structure of the data.
+- Store the resulting object as `gas2`.
+
+
+d. Present an `autoplot`, `ACF`, and `gg_subseries` plot of the natural gas delivery series in (c). Briefly comment on your plots. Set the maximum lags in the ACF to be at least three (3) years. Use `wrap_plots()` to present your graphs as a 3x1 grid. **Be sure to label your axes properly.**
+
+
+e. Let us proceed with forecasting this delivery series. To do this, we will first need to split the data into a training (`train.gas2`) and testing set (`test.gas2`). 
+
+Assign the last two years of data to `test.gas2` and the remaining observations to `train.gas2`. **Note: Although we could use the `filter_index()` function to split the data, I would like you to use the `slice_head()` and `slice_tail()` functions instead.**
+
+
+f. Confirm that the data is correctly split by using the `autoplot()` and `autolayer()` functions. Be sure to include `gas.ts`, `train.gas` and `test.gas` in this plot. **A title is not necessary. However, please add colors to your lines to highlight each series**.
+
+
+g.  Use the `model()` and `forecast()` functions to produce forecasts from the four(4) benchmark models from class. **Ensure that your models have appropriate names.**
+
+- You will find it best to store both the model fits and forecasts for later.
+- **Remember that you will need to set the horizon equal to the number of rows in your test set.**
+
+
+h. Produce an `autoplot()` of the forecasts along with the *test* dataset. Be sure to turn off the `PI` at this stage. Does any particular forecast method appear to do a better job than others? Does any model appear to consistently over- or under-predict? 
+
+
+i. Using the `accuracy()` and `select_at()` commands, extract the `RMSE`, `MAE`, `ME`, and `MAPE` statistics. Also, I am intrigued to know the `MSE` value. Use the `mutate()` function to create that column.
+  - Display your results as a table using the `knitr::kable( )` function with `digits = 2`. Add the argument `format.arg = list(big.mark = ",")` to format your table using thousands separator (`,000`).
+  - Lastly, include **an appropriate caption** by adding and modifying the argument `caption = "Your caption Here"`.
+  - Comment on the bias of each model (using the ME). **Be sure to also state which model in absolute terms is "least" biased.**
+  - **Ignoring the `ME`**, which model is preferred under the remaining four (4) selection criteria? **I would like to confirm your choice using the `slice_min()` function.** Be sure to explain how you came to your conclusions. 
+
+
+i. As we discussed in class, the "preferred" model might not necessarily satisfy some or all of the necessary assumptions. Use the `gg_tsresiduals()` function, with `type = "innov"`, to comment on the **in-sample fit** of the model selected by the `MAPE`. **Again, set the maximum lags to 3 years so that you can see more of the dynamics of the `ACF`.** 
+
+When commenting, consider the following:
+
+- Do the residuals appear to be normally distributed?  
+
+- Do you observe any **potential** patterns (seasonality, trend, cycle) in the `autoplot` and `ACF` of the residuals? From the patterns observed, do you think the residuals are white noise? Why, or why not?
+
+
+j. Using the same model as above, employ the `Ljung-Box` test to conduct a hypothesis test of autocorrelation up to lag $\ell = 2 \times m$. **Where $m$ is the frequency of the data.** 
+
+- You are required to explicitly state the null hypothesis of the test and how you came to your conclusion. **Think back to the decision rule of the test.**
+
+
