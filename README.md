@@ -12,7 +12,7 @@ Below is the live schedule for Applied Economic Forecasting for Spring 2026.
 | 5       | [Time Series Decompositions](2.Lectures/L5/5.Time_Series_Decomposition.pdf)  <br> [Classical Decomposition Additive - In Class](https://htmlpreview.github.io/?https://github.com/Shamar-Stewart/Forecasting-S26/blob/main/2.Lectures/Manual_Decomposition.nb.html)                   |         |
 |         | Exam 1 — March 6, 2026                          |         |
 |         | Spring Break: March 7–15, 2026                  |         |
-| 7       | ARIMA & Seasonal ARIMA Models                   |         |
+| 7       | [ARIMA & Seasonal ARIMA Models](2.Lectures/L6/6.ARIMA_Models.pdf)                   |         |
 |         | $${\color{red}\text{Final Paper Proposal Due — March 23, 2026}}$$[^1]        |         |
 |         | **Multivariate Models**                         |         |
 | 8       | VAR & SVAR Models                               |         |
