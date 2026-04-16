@@ -1,0 +1,107 @@
+---
+title: 'AAEC 4484/AAEC(STAT) 5484: Applied Economic Forecasting'
+author: __Your Name Here__
+date: |
+    Homework #6 - Spring `r format(Sys.Date(),"%Y")` 
+output: pdf_document
+header-includes:
+ \usepackage{float}
+geometry: margin=0.8in
+---
+
+
+```{r setup, include=FALSE}
+library(fpp3)
+library(quantmod)
+library(patchwork)
+
+knitr::opts_chunk$set(
+  echo = TRUE, fig.pos = "H", size = "footnotesize",
+  message = FALSE, warning = FALSE, fig.height = 3, 
+  out.width = "\\textwidth")
+theme_set(theme_light() +
+            theme(legend.text = element_text(size =6),
+                  legend.position = "bottom"))
+options(digits = 3)
+```
+
+
+**Instructions**: Where necessary ensure that your graphs and visuals have proper titles and axis labels. Refer to the output, whenever appropriate, when discussing the results. **Creativity (coupled with relevance) will be rewarded.**
+
+# Question 1: Forecasting U.S. Leisure and Hospitality Employment
+
+Adrian has developed an interested in forecasting employment in the Leisure and Hospitality sector in the US. He has found a dataset on the `Bureau of Labor Statistics (BLS)` website that contains Non-Seasonally adjusted data on `All Employees, Leisure and Hospitality (FRED symbol: CEU7000000001)`.
+
+(a) Import the `hospitality.csv` file from our GitHub `Data` folder and convert to a `tsibble` object with the `index` declared as `yearmonth` object.
+
+
+(b) Provide plots of the (i) data, (ii) ACF (with a *max lag of about 3 years*), and (iii) `gg_subseries()`. Comment on your observations. Take care to properly discuss any potential seasonality and trend in the data.
+
+**Use the `wrap_plots()` function from the `patchwork` package to combine the three plots as a 3x1 grid. Be sure to adjust the size of the figure (using the `heights` command in the `wrap_plots()` function) to ensure that all plots are legible to the reader.**
+
+
+(c) Based on the plots in (b), Adrian suggests that a `Box-Cox` transformation is required. Do you agree with this choice? If so, apply the transformation and provide a plot of the transformed series. Comment on your observations. 
+
+**Similar to what we did in class, use the `bquote()` function to include the symbol, $\lambda$ and the value of `lambda` in the subtitle of the plot.**
+
+
+(d.i) Reagan immediately looked at the transformed series in (c) and concludes that the series is non-stationary. Explain how she came to this conclusion? 
+**Here, I do not need you to perform any tests, I just need you to use your intuition and knowledge of the theory of stationarity to support your answer.**
+
+
+(d.ii) Proceed by conducting formal unit root testing. You will need to specify the null hypothesis (hypotheses) and corresponding conclusions of the unit root test(s) used. Also, produce plots of the differenced series and comment on their stationarity.
+
+**Hint: Recall that the `KPSS` test is designed for non-seasonal data. To avoid over-differencing, you could first use the `nsdiffs()` function to determine if seasonal differencing is necessary before proceeding with the `KPSS` test.** 
+
+
+(e) Perform the Box-Jenkins procedure to determine the candidate SARIMA models for this data. **You can skip any step that you have already explored above. Just make sure you reference that in your answer so that I can follow along.**
+
+- **Be sure to:**
+  - **Justify and estimate your candidate models. I would like you to explain how you arrived at your choices.**
+    - **Set your `lag_max` to at least 6 years.**
+  - **Give your models appropriate names to make it easier to reference them in the future.**
+  - **Identify and report your "preferred" model based on the BIC statistic.**
+  - **Conduct model diagnostic checks on your preferred model and comment on its adequacy. Comment on the Ljung-Box (LB) test results. Be sure to explain the hypotheses and conclusions as well as account for the appropriate degrees of freedom and lags of the LB test.**
+
+
+(f) You might notice and recall that COVID-19 had a significant impact on the Leisure and Hospitality sector. Let us account for this by including a `COVID-19` dummy as an exogenous variable in our model. 
+
+- Re-estimate your ARIMA model to include `COVID`, a dummy variable that takes the value of 1 from **March 2020 (when the first state of emergency was issued) to April 2023 (when the national emergency was lifted)** and 0 otherwise. **I would like you to use an `if_else` statement to create this dummy variable.**
+
+- Report the results of your model. Is the COVID dummy a significant predictor of the employment series? Explain, the sign and magnitude in full detail. Remember that you can use the `tidy()` function to get the `t-stat` and `p-values` to support your answer.  
+
+**Note: You can allow `R` to auto-select the "best" model for you. However, be sure to force the seasonal (`D`) and non-seasonal (`d`) differences to be the same as you had above. Also, give this model an appropriate name to make it easier to reference in the future.**
+
+
+(g) Conduct diagnostic checks on the model in (f) and comment on its adequacy. Again, remember to account for the appropriate lags and degrees of freedom.
+
+
+(h) Using your model preferred model in (e) and the "COVID" model in (f), provide forecasts of the employment series for the next three (3) years. Produce a plot of the forecasts from both models and comment on the differences in the forecasts. **Do not add the original series or intervals to the plot to avoid clutter. Just focus on the forecasts from the two models.**
+
+**Hint:**    
+  - **Remember that you will have to supply the future values for the `COVID` dummy variable in the `new_data()` argument.**
+  - **The `bind_cols()` function is useful for combining the model fits of the two models to make forecasting easier.**
+
+
+\newpage
+
+# Question 2: Forecasting C02
+
+Carbon Emissions is an ever-evolving and interesting issue among environmental activists and academics alike. 
+
+(a) Import the Annual Transportation Carbon Dioxide Emissions, All Fuels for United States (FRED symbol: `EMISSCO2TOTVTCTOUSA`) stored in the `co2_em_va.csv` file on our GitHub `Data` folder. Declare the `Date` variable as a `year` object and convert the data to a `tsibble` object with the appropriate `index`.
+
+
+(b)  Provide a time-series plot of the data and comment on its stationarity. Also, provide a plot of the ACF (with a *max lag of about 20 years*) to aid in your discussion of stationarity.
+
+
+(c) Perform the Box-Jenkins procedure to determine the candidate models for this data. Here, you are required to walk me through the steps of the Box-Jenkins procedure in detail. **Do not use the automatic model selection function in `R` to select your preferred model.**
+
+- **I am asking you to:**
+  - **Perform formal unit root testing. You will need to specify the null hypothesis (hypotheses) and corresponding conclusions of the unit root test(s) used.**
+  - **Present the AIC and BIC statistics of your candidate model(s) in a table using the `kable()` function. Columns and Rows should be properly labeled.**
+  - **Explain how you arrived at your preferred model.**
+  - **Report the diagnostic checks to justify the adequacy of your model. Comment on the Ljung-Box test results.**
+
+
+(d) Using your preferred model, present an `autoplot()` of the forecast for the next five (5) years. 
