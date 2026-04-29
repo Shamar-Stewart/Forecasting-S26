@@ -15,7 +15,7 @@ Below is the live schedule for Applied Economic Forecasting for Spring 2026.
 | 6       | [ARIMA & Seasonal ARIMA Models](2.Lectures/L6/6.ARIMA_Models.pdf)                   |[HW6 - RMD FILE](3.Homework/HW6/AAEC_4484_5484_HW6_S26_Empty.Rmd) <br> [HW6 - PDF FILE](3.Homework/HW6/AAEC_4484_5484_HW6_S26_Empty.pdf) <br> 🕛 $${\color{blue}\text{Due: April 22, 2026 (11:59 PM)}}$$                 |
 |         | $${\color{red}\text{Final Paper Proposal Due — March 23, 2026}}$$[^1]        |  |
 |         | **Multivariate Models**                         |         |
-| 7       | [VAR](2.Lectures/L7/7.VAR_Models_Part-I.pdf) & [SVAR Models]((2.Lectures/L7/7.VAR_Models_Part-II.pdf)                               |         |
+| 7       | [VAR](2.Lectures/L7/7.VAR_Models_Part-I.pdf) & [SVAR Models](2.Lectures/L7/7.VAR_Models_Part-II.pdf)                               |         |
 | 8       | Volatility Modelling                            |         |
 | 9      | Forecast Evaluation & Combination               |         |
 |         | Exam 2 — May 6, 2026                            |         |
