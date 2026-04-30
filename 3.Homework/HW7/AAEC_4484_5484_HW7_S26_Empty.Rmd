@@ -1,0 +1,123 @@
+---
+title: 'AAEC 4484/AAEC(STAT) 5484: Applied Economic Forecasting'
+author: __Your Name Here__
+date: |
+    Homework #7 - Spring `r format(Sys.Date(),"%Y")` 
+output: pdf_document
+header-includes:
+ \usepackage{float}
+geometry: margin=0.8in
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(fpp3)
+library(urca)
+
+knitr::opts_chunk$set(cache = FALSE,
+  echo = TRUE, size = "footnotesize",
+  message = FALSE, warning = FALSE, fig.height = 3,
+  out.width = "\\textwidth")
+theme_set(theme_bw() +
+            theme(legend.position = "bottom"))
+options(digits = 3)
+```
+
+```{r solution-engine, include=FALSE}
+knitr::knit_engines$set(solution = function(options) {
+#   paste0("**Solution: ", options$code, "**")
+# })
+  text <- paste(options$code, collapse = "\n")
+
+  out <- knitr::knit_child(
+    text = text,
+    envir = options$envir,
+    quiet = TRUE
+  )
+
+  paste0(
+    "\n\n**Solution:**\n",
+    paste(out, collapse = "\n"),
+    "\n\n\\vspace{1em}\n"
+  )
+})
+# source("../../R/strip_solutions.R");
+# strip_solution_rmds()
+```
+
+**Instructions**: This question is a modified version of the Empirical example in Ghysels \& Marcellino (2018) -- Applied economic forecasting using time series methods, Ch. 6. 
+
+A PDF version of the question and expected output is available in the `HW7` folder. **Caution: The questions and results might not be a 1-to-1 mapping with the textbook, so be sure to read carefully and answer the specific prompts below.**
+
+
+# Question 1: Euro Area Business Cycles
+
+Mawuena is a research economist at the European Central Bank tasked with understanding how macroeconomic shocks transmit across the major Euro area economies. He has assembled a dataset of quarterly real GDP growth rates (year-over-year, percent) for France (`g_fr`), Germany (`g_ger`), and Italy (`g_it`), along with the United States (`g_us`), spanning 1986Q1 to 2012Q4. The dataset also contains some dummy variables labeled `d_XXXXqx` accounting for exceptional (outlier) episodes across the sample. The data are stored in `euro_growth.csv` on our GitHub `Data` folder.
+
+Before diving in, we need to address a modeling choice that is not explicitly covered in our slides but will come up constantly in your own work: **exogenous variables in a VAR**. The standard `vars::VAR()` function accepts an `exogen` argument-- a matrix of variables that enter every equation as contemporaneous controls but whose own dynamics are *not* modeled by the system. The United States is a natural candidate here. It is large enough that French, German, or Italian business cycles are unlikely to move the US economy in any meaningful way, but a US recession clearly spills over into Europe. If we had treated `g_us` as endogenous, we would force the model to "explain" it using European lags, wasting parameters and potentially distorting the dynamics we actually care about. Treating it as exogenous instead lets it absorb common global shocks in every equation while keeping the system focused on the inter-European dynamics we want to study. 
+
+**Unless otherwise specified, `g_us` and the dummy variables should be included as exogenous controls in all VAR estimations below.**
+
+## Data and Stationarity
+
+(a) Import the `euro_growth.csv` file and convert to a `tsibble` object with a `yearquarter` index. Plot the three EU growth series on a single graph. To motivate the idea of US growth-induced comovements among the EU series, please super impose the US recessions (as identified by the NBER\footnote{You are interested in the Peak and Trough dates here: https://www.nber.org/research/data/us-business-cycle-expansions-and-contractions}) over the sample periods. **Remember that ordering of the `ggplot` layers matter so make the recession bars appear as shaded areas behind the lines. Hence, this needs to be the base plot.**
+
+Briefly describe what you see --- do the three European series move together? Are there any episodes that stand out?
+
+
+(b) Apply the ADF test (`ur.df()`) to `g_fr`, `g_ger`, and `g_it`. For each series, justify your choice of test specification (`"drift"` vs. `"trend"`) and comment on your conclusions at the 5% level of significance?
+
+**Hint: Use a lag length of 4 for the ADF test, which is a common choice for quarterly data.**
+
+
+## Lag Selection and Estimation
+
+Although the ADF test might have failed to reject the null of a unit root for some of the series above, this likely reflects the well-known low power of unit root tests in small samples and in the presence of the potential structural breaks identified. From an economic standpoint, GDP growth rates are generally stationary processes. Therefore, we proceed under the assumption of stationarity.
+
+(c) Next, we will proceed by using the data from 1986 Q1 -- 2003 Q4 for the model estimation and 2004 Q1 -- 2012 Q4 for the diagnostics.
+
+Use `vars::VARselect()` with a `lag.max = 4` to select the lag order, passing `g_fr`, `g_ger`, and `g_it` as the endogenous block and `g_us` and the recession dummies (from the `.csv` file) as the exogenous variable.
+
+Go through the process of testing to ensure that the lag order(s) suggested has (have) correctly specified the dynamics of the system. 
+
+**Note: In the `serial.test()`, use `lags.pt = 16` and the 5% level of significance to check for autocorrelation up to 4 years. If the diagnostics suggest that you need to add more lags, do so and re-run the diagnostics until you find a lag order that eliminates autocorrelation in the residuals.**
+
+
+(d) Estimate your chosen VAR over the subsample.  Report the coefficient table for the **Germany equation only**. Is the US growth variable significant in this equation? Does this match your economic intuition? **Remember your exogenous variables!**
+
+
+(e) Run the remaining suite of diagnostics on your estimated VAR: normality (`normality.test()`), heteroskedasticity (`arch.test()`), and stability
+check (`vars::roots()`). Summarize your findings in a short paragraph. Be sure to mention the null hypotheses and your conclusions in each case. If any diagnostic raises a concern, explain what you would do about it.
+
+
+## Part III: Granger Causality
+
+(f) Using `vars::causality()`, test whether Germany Granger-causes the rest of the system. Report the null hypothesis, the test statistic, and the p-value. What do you conclude at the 5% level of significance? How about the 10% level of significance? What is the implication of your findings for the predictive content of Germany's growth rate for the rest of the Euro area?
+
+
+## Part IV: Impulse Response Functions
+
+(g) Compute and plot the orthogonalized IRFs for a one-unit shock to German GDP growth (`g_ger`), tracing the response of all three European series over 12 quarters. Use Cholesky identification with the ordering (France, Germany, Italy) and bootstrap confidence intervals (`boot = TRUE`,`ci = 0.95`). Are the spillovers from Germany to France and Italy positive and statistically significant? At what horizon do they peak?
+
+
+(h) The Cholesky ordering places France first, implying it does not respond contemporaneously to shocks from Germany or Italy within a quarter. Re-estimate the IRFs using the alternative
+ordering (Germany, France, Italy) and briefly compare the results. How sensitive are your conclusions to this new ordering? **Note: You will need to re-estimate the VAR with the new ordering of the endogenous variables to do this. The exogenous variables remain the same.**
+
+
+## Part V: Forecast Error Variance Decomposition
+
+(i) Compute the forecast error variance decomposition (FEVD) for the original VAR specification (France, Germany, Italy) over a 12-quarter horizon. Using the `fevd_make_table` helper function from the class notes, create a table summarizing the contributions of each shock at 1-, 4-, 8-, and 12-quarter ahead horizons. 
+
+**Briefly** summarize your findings. Focus on the relative contributions to own and cross-variable forecast error variances. What do your results imply about the importance of German growth shocks for the Euro area business cycles?
+
+
+## Forecasting
+
+(j) Mawuena now feels comfortable using the VAR to produce forecasts for the three European growth rates for the next 3-years. 
+
+Use your VAR with the ordering (France, Germany, Italy) to produce dynamic forecasts for all three series for the next 3-years (`n.ahead = 12`). You will need to supply the actual values of the exogenous variables (`g_us` and the recession dummies) over the forecast period of interest using the `dumvar` argument in the `predict()` function. 
+**Note that the future values supplied should correspond to observations 73-84 of the exogenous variables in the dataset.**
+
+Using the `fanchart()` function, plot the forecasts for all three series. Briefly comment on the forecasted trajectories of the three series and the associated uncertainty.
+
+
